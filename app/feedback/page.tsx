@@ -35,6 +35,7 @@ export default function FeedbackPage() {
     formState: { errors },
     reset,
     watch,
+    setValue,
   } = useForm<FeedbackFormData>({
     resolver: zodResolver(feedbackSchema),
     defaultValues: {
@@ -91,16 +92,26 @@ export default function FeedbackPage() {
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
                 <label
                   key={num}
+                  htmlFor={`${name}-${num}`}
+                  onClick={() =>
+                    setValue(name, num, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                      shouldTouch: true,
+                    })
+                  }
                   className="relative flex flex-col items-center cursor-pointer group"
                 >
                   <input
+                    id={`${name}-${num}`}
                     type="radio"
                     {...register(name, { valueAsNumber: true })}
                     value={num}
+                    checked={value === num}
                     className="peer sr-only"
                   />
                   <div
-                    className={`w-10 h-10 rounded-lg border-2 flex items-center justify-center font-semibold text-sm transition-all
+                    className={`pointer-events-none w-10 h-10 rounded-lg border-2 flex items-center justify-center font-semibold text-sm transition-all
                     ${
                       value === num
                         ? "bg-[#D6312F] border-[#D6312F] text-white shadow-lg scale-110"
