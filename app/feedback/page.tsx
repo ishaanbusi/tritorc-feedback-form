@@ -28,6 +28,9 @@ export default function FeedbackPage() {
   const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(
     null
   );
+  const [selectedRatings, setSelectedRatings] = useState<
+    Partial<Record<keyof FeedbackFormData, number>>
+  >({});
 
   const {
     register,
@@ -57,6 +60,7 @@ export default function FeedbackPage() {
       if (response.ok) {
         setSubmitStatus("success");
         reset({ date: new Date().toISOString().split("T")[0] });
+        setSelectedRatings({});
         window.scrollTo({ top: 0, behavior: "smooth" });
         setTimeout(() => setSubmitStatus(null), 5000);
       } else {
@@ -76,7 +80,7 @@ export default function FeedbackPage() {
     name: keyof FeedbackFormData;
     label: string;
   }) => {
-    const value = watch(name);
+    const value = selectedRatings[name] ?? watch(name);
 
     return (
       <div className="space-y-3">
@@ -90,17 +94,9 @@ export default function FeedbackPage() {
             </span>
             <div className="flex gap-2 flex-1 justify-center flex-wrap">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                <label
+                <div
                   key={num}
-                  htmlFor={`${name}-${num}`}
-                  onClick={() =>
-                    setValue(name, num, {
-                      shouldValidate: true,
-                      shouldDirty: true,
-                      shouldTouch: true,
-                    })
-                  }
-                  className="relative flex flex-col items-center cursor-pointer group"
+                  className="relative flex flex-col items-center"
                 >
                   <input
                     id={`${name}-${num}`}
@@ -108,10 +104,22 @@ export default function FeedbackPage() {
                     {...register(name, { valueAsNumber: true })}
                     value={num}
                     checked={value === num}
-                    className="peer sr-only"
+                    tabIndex={-1}
+                    className="sr-only"
                   />
-                  <div
-                    className={`pointer-events-none w-10 h-10 rounded-lg border-2 flex items-center justify-center font-semibold text-sm transition-all
+                  <button
+                    type="button"
+                    aria-label={`${label}: ${num} out of 10`}
+                    aria-pressed={value === num}
+                    onClick={() => {
+                      setSelectedRatings((ratings) => ({ ...ratings, [name]: num }));
+                      setValue(name, num, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                        shouldTouch: true,
+                      });
+                    }}
+                    className={`w-10 h-10 rounded-lg border-2 flex items-center justify-center font-semibold text-sm transition-all cursor-pointer
                     ${
                       value === num
                         ? "bg-[#D6312F] border-[#D6312F] text-white shadow-lg scale-110"
@@ -119,8 +127,8 @@ export default function FeedbackPage() {
                     }`}
                   >
                     {num}
-                  </div>
-                </label>
+                  </button>
+                </div>
               ))}
             </div>
             <span className="text-xs font-medium text-gray-500 min-w-[60px] text-right">
