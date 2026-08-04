@@ -9,12 +9,12 @@ const feedbackSchema = z.object({
   companyName: z.string().min(1, 'Company name is required'),
   country: z.string().min(1, 'Country is required'),
   salesOrderNumber: z.string().min(1, 'Sales order number is required'),
-  toolBuildQuality: z.number().min(1).max(10),
-  packaging: z.number().min(1).max(10),
-  onTimeDelivery: z.number().min(1).max(10),
-  afterSalesSupport: z.number().min(1).max(10),
-  productUsability: z.number().min(1).max(10),
-  recommendationScore: z.number().min(1).max(10),
+  toolBuildQuality: z.coerce.number().min(1).max(10),
+  packaging: z.coerce.number().min(1).max(10),
+  onTimeDelivery: z.coerce.number().min(1).max(10),
+  afterSalesSupport: z.coerce.number().min(1).max(10),
+  productUsability: z.coerce.number().min(1).max(10),
+  recommendationScore: z.coerce.number().min(1).max(10),
   suggestions: z.string().optional(),
 })
 
